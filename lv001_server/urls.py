@@ -22,4 +22,5 @@ version = 'v1'
 urlpatterns = [
     path(version + '/', include('user_management.urls')),
     path(version + '/products/', include('product.urls')),
+    path(version + '/carts/', include('cart.urls')),
 ]

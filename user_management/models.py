@@ -26,7 +26,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_seller = models.BooleanField(default=False)
     is_philanthropist = models.BooleanField(default=False)
     phone = models.CharField(max_length=10, null=False, blank=False)
-    avatar = models.CharField(max_length=500, null=True, blank=True)
+    avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
 
     objects = UserManager()
 

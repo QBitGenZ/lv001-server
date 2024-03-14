@@ -5,9 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from feedback.models import Feedback
 from product.models import ProductType, Product, ProductDetail
 from product.serializers import ProductTypeSerializer, ProductSerializer, ProductImageSerializer, \
-    ProductDetailSerializer
+    ProductDetailSerializer, ProductFeedbackSerializer
 from resource.models import Image
 
 
@@ -87,7 +88,7 @@ class ProductView(APIView):
         page = request.query_params.get('page', 1)
         limit = request.query_params.get('limit', 10)
 
-        product = Product.objects.all()
+        product = Product.objects.all().order_by('created_at')
 
         paginator = Paginator(product, limit)
 
@@ -105,7 +106,6 @@ class ProductView(APIView):
         )
 
     def post(self, request, *args, **kwargs):
-
         data = request.data.copy()
         data['user'] = request.user.username
 
@@ -144,47 +144,6 @@ class ProductView(APIView):
             return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
         product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ProductImageView(APIView):
-    def get(self, request, pk, *args, **kwargs):
-        try:
-            product_images = Image.objects.get(pk=pk)
-        except Image.DoesNotExist:
-            return Response({'error': 'Ảnh sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductImageSerializer(product_images)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
-
-    def post(self, request, *args, **kwargs):
-        serializer = ProductImageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk, *args, **kwargs):
-        try:
-            product_image = Image.objects.get(pk=pk)
-        except Image.DoesNotExist:
-            return Response({'error': 'Ảnh sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductImageSerializer(instance=product_image, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, *args, **kwargs):
-        try:
-            product_image = Image.objects.get(pk=pk)
-        except Image.DoesNotExist:
-            return Response({'error': 'Ảnh sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
-
-        product_image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ProductDetailView(APIView):
@@ -226,3 +185,4 @@ class ProductDetailView(APIView):
 
         product_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+

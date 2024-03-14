@@ -1,1 +1,3 @@
 /uploads/
+**/migrations/*.py
+**/migrations/*.pyc

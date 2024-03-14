@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+from feedback.models import Feedback
 from product.models import Product
 
 
@@ -15,6 +16,9 @@ class Image(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_image',
                                 null=True, blank=True)
+
+    feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE, related_name='feedback_image',
+                                 null=True, blank=True)
 
     def __str__(self):
         return self.alt
