@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from cart.models import CartDetail
+from cart.models import CartItem
 from cart.serializers import CartDetailSerializer, AddCartDetailSerializer
 from product.models import Product
 
@@ -13,7 +13,7 @@ class CartDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        cart_detail = CartDetail.objects.filter(user=request.user)
+        cart_detail = CartItem.objects.filter(user=request.user)
         serializer = CartDetailSerializer(cart_detail, many=True)
         return Response({
             'data': serializer.data
@@ -37,8 +37,8 @@ class CartDetailView(APIView):
 
     def put(self, request, pk, *args, **kwargs):
         try:
-            cart_detail = CartDetail.objects.get(pk=pk)
-        except CartDetail.DoesNotExist:
+            cart_detail = CartItem.objects.get(pk=pk)
+        except CartItem.DoesNotExist:
             return Response({
                 'error': 'Chi tiết giỏ hàng không tồn tại'
             }, status=status.HTTP_404_NOT_FOUND)
@@ -59,8 +59,8 @@ class CartDetailView(APIView):
 
     def delete(self, request, pk, *args, **kwargs):
         try:
-            cart_detail = CartDetail.objects.get(pk=pk)
-        except CartDetail.DoesNotExist:
+            cart_detail = CartItem.objects.get(pk=pk)
+        except CartItem.DoesNotExist:
             return Response({
                 'error': 'Chi tiết giỏ hàng không tồn tại'
             }, status=status.HTTP_404_NOT_FOUND)

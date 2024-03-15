@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
+from address.serializers import AddressSerializer
 from user_management.models import User
 
 
@@ -22,14 +23,16 @@ class AdminUserSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
+    addresses = AddressSerializer(many=True, read_only=True)
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'full_name', 'password', 'is_philanthropist', 'is_seller',
-                  'phone', 'is_female', 'birthday', 'avatar']
+                  'phone', 'is_female', 'birthday', 'avatar', 'addresses']
 
         extra_kwargs = {
             'password': {'write_only': True},
             'id': {'read_only': True},
+            'addresses': {'read_only': True},
         }
 
     def create(self, validated_data):
