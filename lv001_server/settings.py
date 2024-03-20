@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'feedback.apps.FeedbackConfig',
     'cart.apps.CartConfig',
     'address.apps.AddressConfig',
+    'order.apps.OrderConfig',
 ]
 
 MIDDLEWARE = [
