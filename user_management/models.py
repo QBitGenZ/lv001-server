@@ -28,6 +28,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=10, null=False, blank=False)
     avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
     status = models.CharField(max_length=100, default='Chưa xác minh')
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     objects = UserManager()
 

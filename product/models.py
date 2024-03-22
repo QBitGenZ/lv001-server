@@ -25,6 +25,7 @@ class Product(models.Model):
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE, related_name='products')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_user', to_field='username')
     created_at = models.DateTimeField(auto_now_add=True)
+    size = models.CharField(max_length=10, default='L')
 
 
     def __str__(self):
