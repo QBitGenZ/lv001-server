@@ -27,7 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_philanthropist = models.BooleanField(default=False)
     phone = models.CharField(max_length=10, null=False, blank=False)
     avatar = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
-    check = models.CharField(max_length=100, default='Chưa xác minh')
+    status = models.CharField(max_length=100, default='Chưa xác minh')
 
     objects = UserManager()
 
