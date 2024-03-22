@@ -27,6 +27,7 @@ class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_user', to_field='username')
 
     created_at = models.DateTimeField(auto_now_add=True)
+    check = models.CharField(max_length=100, default='Chưa duyệt')
 
     def __str__(self):
         return self.name
