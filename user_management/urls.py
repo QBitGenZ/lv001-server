@@ -8,4 +8,5 @@ urlpatterns = [
     path('register', RegisterView.as_view()),
     path('login', LoginView.as_view()),
     path('info', GetInfoView.as_view()),
+    path('status/<str:username>', GetInfoView.as_view()),
 ]

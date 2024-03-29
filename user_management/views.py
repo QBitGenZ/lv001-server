@@ -144,3 +144,16 @@ class GetInfoView(APIView):
         user = request.user
         serializer = UserSerializer(user, many=False)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+
+
+class ChangeStatusView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    def put(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        serializers = UserSerializer(user, data=request.data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+

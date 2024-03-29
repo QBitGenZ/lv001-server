@@ -59,7 +59,7 @@ class ProductTypeView(APIView):
         except ProductType.DoesNotExist:
             return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ProductTypeSerializer(instance=product_type, data=request.data)
+        serializer = ProductTypeSerializer(instance=product_type, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -126,7 +126,7 @@ class ProductView(APIView):
         except Product.DoesNotExist:
             return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
-        product_serializer = ProductSerializer(instance=product, data=request.data)
+        product_serializer = ProductSerializer(instance=product, data=request.data, partial=True)
         if product_serializer.is_valid():
             product_serializer.save()
             return Response({
