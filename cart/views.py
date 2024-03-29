@@ -22,14 +22,28 @@ class CartDetailView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         data['user'] = request.user.username
-
         serializer = AddCartDetailSerializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
-            return Response({
-                'data': serializer.data
-            }, status=status.HTTP_201_CREATED)
+            product_id = serializer.validated_data['product']
+            user = request.user
+            quantity = serializer.validated_data.get('quantity', 1)
+
+            # Check if the product already exists in the user's cart
+            try:
+                cart_item = CartItem.objects.get(user=user, product=product_id)
+                # Update the quantity
+                cart_item.quantity += quantity
+                cart_item.save()
+                return Response({
+                    'data': serializer.data
+                }, status=status.HTTP_200_OK)
+            except CartItem.DoesNotExist:
+                # If the product does not exist in the cart, create a new entry
+                serializer.save()
+                return Response({
+                    'data': serializer.data
+                }, status=status.HTTP_201_CREATED)
         else:
             return Response({
                 'error': serializer.errors
