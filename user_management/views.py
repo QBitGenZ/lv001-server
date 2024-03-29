@@ -35,7 +35,7 @@ class AdminUserView(APIView):
             except User.DoesNotExist:
                 return Response('Data does not exist', status=status.HTTP_404_NOT_FOUND)
 
-            serializer = AdminUserSerializer(user, data=request.data)
+            serializer = AdminUserSerializer(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
