@@ -42,7 +42,7 @@ class EventView(APIView):
                 'data': serializer.data
             }, status.HTTP_201_CREATED)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
 
 class EventPkView(APIView):
     permission_classes = [IsAuthenticated]
@@ -69,7 +69,7 @@ class EventPkView(APIView):
                 'data': serializer.data
             }, status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error' : serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, *args, **kwargs):
         try:
