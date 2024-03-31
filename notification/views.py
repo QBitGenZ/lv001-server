@@ -12,8 +12,8 @@ class NotificationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        limit = request.GET.get('limit', 10)
-        page = request.GET.get('page', 1)
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
         limit = int(limit)
         page = int(page)
 
