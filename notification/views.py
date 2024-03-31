@@ -37,6 +37,7 @@ class NotificationView(APIView):
         data['user'] = request.user.username
         serializer = NotificationSerializer(data=data)
         if serializer.is_valid():
+            serializer.save();
             return Response({
                 'data': serializer.data
             }, status=status.HTTP_201_CREATED)
@@ -67,6 +68,7 @@ class NotificationPkView(APIView):
         data['user'] = request.user.username
         serializer = NotificationSerializer(instance=notification, data=data, partial=True)
         if serializer.is_valid():
+            serializer.save()
             return Response(
                 {'data': serializer.data},
                 status=status.HTTP_200_OK
