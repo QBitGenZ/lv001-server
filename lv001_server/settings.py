@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'address.apps.AddressConfig',
     'order.apps.OrderConfig',
     'event.apps.EventConfig',
+    'notification.apps.NotificationConfig',
 ]
 
 MIDDLEWARE = [

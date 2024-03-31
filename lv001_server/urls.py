@@ -27,6 +27,7 @@ urlpatterns = [
     path(version + '/addresses/', include('address.urls')),
     path(version + '/orders/', include('order.urls')),
     path(version + '/events/', include('event.urls')),
+    path(version + '/notifications', include('notification.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
