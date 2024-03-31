@@ -17,25 +17,26 @@ class ProductTypeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        page = request.query_params.get('page', 1)
         limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
 
-        product_types = ProductType.objects.all()
+        objects = ProductType.objects.all()
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+        current_page_objects = objects[(page - 1) * limit:page * limit]
 
-        paginator = Paginator(product_types, limit)
+        serializer = ProductTypeSerializer(current_page_objects, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
 
-        try:
-            product_types_page = paginator.page(page)
-        except EmptyPage:
-            product_types_page = paginator.page(paginator.num_pages)
-
-        serializer = ProductTypeSerializer(product_types_page, many=True)
-        return Response(
-            {
-                'data': serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
 
     def post(self, request, *args, **kwargs):
 
@@ -85,25 +86,26 @@ class ProductTypeView(APIView):
 
 class ProductView(APIView):
     def get(self, request, *args, **kwargs):
-        page = request.query_params.get('page', 1)
         limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
 
-        product = Product.objects.all().order_by('created_at')
+        objects = Product.objects.all()
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+        current_page_objects = objects[(page - 1) * limit:page * limit]
 
-        paginator = Paginator(product, limit)
+        serializer = ProductSerializer(current_page_objects, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
 
-        try:
-            products_page = paginator.page(page)
-        except EmptyPage:
-            products_page = paginator.page(paginator.num_pages)
-
-        serializer = ProductSerializer(products_page, many=True)
-        return Response(
-            {
-                'data': serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
 
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
@@ -112,13 +114,11 @@ class ProductView(APIView):
         product_serializer = ProductSerializer(data=data)
         if product_serializer.is_valid():
             product_serializer.save()
-
             return Response({
                 'data': product_serializer.data
             }, status=status.HTTP_201_CREATED)
-
-        return Response(
-            {'error': product_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': product_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, *args, **kwargs):
         try:
