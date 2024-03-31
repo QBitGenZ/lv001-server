@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from address import models
+from notification.models import Notification
 
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models
+        model = Notification
         fields = '__all__'
 
         extra_kwargs = {
