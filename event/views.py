@@ -38,8 +38,8 @@ class EventView(APIView):
         serializer = EventSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return ({
-                data: serializer.data
+            return Response({
+                'data': serializer.data
             }, status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
