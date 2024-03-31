@@ -34,7 +34,7 @@ class EventView(APIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-        data.user = request.user.username
+        data['user'] = request.user.username
         serializer = EventSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
