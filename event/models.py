@@ -14,6 +14,7 @@ class Event(models.Model):
     beginAt = models.DateTimeField()
     endAt = models.DateTimeField()
     image = models.ImageField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
+    status = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
