@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ProductTypeView, ProductView, ProductDetailView
+from .views import ProductTypeView, ProductView, ProductDetailView,ProductByUser
 
 urlpatterns = [
     path('types/', ProductTypeView.as_view(), name='product_types'),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('details/<uuid:pk>/', ProductDetailView.as_view(), name='product_details'),
     path('details/', ProductDetailView.as_view(), name='product_details'),
     path('images/', include('resource.urls')),
-    path('feedbacks/', include('feedback.urls'))
+    path('feedbacks/', include('feedback.urls')),
+    path('myproduct/', ProductByUser.as_view(), name='my-product'),
 ]

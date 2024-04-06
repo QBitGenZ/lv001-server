@@ -146,6 +146,30 @@ class ProductView(APIView):
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class ProductByUser(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
+
+        objects = Product.objects.filter(user=request.user.username)
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+        current_page_objects = objects[(page - 1) * limit:page * limit]
+
+        serializer = ProductSerializer(current_page_objects, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
+
+
 class ProductDetailView(APIView):
     def get(self, request, pk, *args, **kwargs):
         try:
