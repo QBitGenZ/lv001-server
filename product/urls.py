@@ -10,5 +10,5 @@ urlpatterns = [
     path('details/', ProductDetailView.as_view(), name='product_details'),
     path('images/', include('resource.urls')),
     path('feedbacks/', include('feedback.urls')),
-    path('myproduct/', ProductByUser.as_view(), name='my-product'),
+    path('myproducts/', ProductByUser.as_view(), name='my-product'),
 ]
