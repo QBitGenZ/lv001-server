@@ -21,6 +21,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     quantity = models.IntegerField()
+    sold = models.IntegerField(default=0)
     status = models.CharField(max_length=100, default='Chưa duyệt')
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE, related_name='products')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_user', to_field='username')
