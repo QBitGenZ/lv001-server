@@ -7,9 +7,9 @@ from rest_framework.views import APIView
 
 from feedback.models import Feedback
 from product.models import ProductType, Product, ProductDetail
-from product.serializers import ProductTypeSerializer, ProductSerializer, ProductImageSerializer, \
-    ProductDetailSerializer, ProductFeedbackSerializer
+from product.serializers import ProductTypeSerializer, ProductSerializer, ProductImageSerializer, ProductDetailSerializer, ProductFeedbackSerializer
 from resource.models import Image
+from django.db import models
 
 
 # Create your views here.
@@ -82,7 +82,6 @@ class ProductTypeView(APIView):
 
         product_type.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class ProductView(APIView):
     def get(self, request, *args, **kwargs):
@@ -233,3 +232,21 @@ class SoldProductView(APIView):
                 'total': objects.count()
             }
         }, status=status.HTTP_200_OK)
+        
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import F, ExpressionWrapper, Sum
+from user_management.models import User
+from .models import Product
+
+class TotalRevenueByUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        username = request.user.username
+        total_revenue = Product.objects.filter(sold__gt=0, user__username=username).aggregate(total_revenue=Sum(ExpressionWrapper(F('price') * F('sold'), output_field=models.FloatField())))['total_revenue']
+        
+        return Response(
+            {'data': total_revenue},
+            status=status.HTTP_200_OK
+        )
