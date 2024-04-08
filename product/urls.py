@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ProductTypeView, ProductView, ProductPkView,ProductByUser,SoldProductView
+from .views import ProductTypeView, ProductView, ProductPkView,ProductByUser,SoldProductView,TotalRevenueByUserAPIView
 
 urlpatterns = [
     path('types/', ProductTypeView.as_view(), name='product_types'),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('feedbacks/', include('feedback.urls')),
     path('myproducts/', ProductByUser.as_view(), name='my-product'),
     path('myproducts/sold/', SoldProductView.as_view(), name='sold-product'),
+    path('myproducts/revenue/', TotalRevenueByUserAPIView.as_view, name='revenue'),
 ]
