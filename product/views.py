@@ -169,17 +169,6 @@ class ProductByUser(APIView):
             }
         }, status=status.HTTP_200_OK)
 
-
-class ProductDetailView(APIView):
-    def get(self, request, pk, *args, **kwargs):
-        try:
-            product_detail = ProductDetail.objects.get(pk=pk)
-        except ProductDetail.DoesNotExist:
-            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductDetailSerializer(product_detail)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
-
     def post(self, request, *args, **kwargs):
         serializer = ProductDetailSerializer(data=request.data)
         if serializer.is_valid():
@@ -210,3 +199,37 @@ class ProductDetailView(APIView):
         product_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class ProductPkView(APIView):
+    
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            product_detail = ProductDetail.objects.get(pk=pk)
+        except ProductDetail.DoesNotExist:
+            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProductDetailSerializer(product_detail)
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+    
+class SoldProductView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
+
+        objects = Product.objects.filter(user=request.user.username, sold__gt = 0).order_by('name')
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+        current_page_objects = objects[(page - 1) * limit:page * limit]
+
+        serializer = ProductSerializer(current_page_objects, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
