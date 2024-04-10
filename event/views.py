@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from event.models import Event
 from event.serializers import EventSerializer
+from django.db.models import Q
 
 
 # Create your views here.
@@ -14,10 +15,19 @@ class EventView(APIView):
     def get(self, request, *args, **kwargs):
         limit = request.query_params.get('limit', 10)
         page = request.query_params.get('page', 1)
+        search_query = request.query_params.get('search', '')
         limit = int(limit)
         page = int(page)
 
         objects = Event.objects.all()
+        
+        if search_query and search_query.strip():
+            objects = objects.filter(
+                Q(name__icontains=search_query) | 
+                Q(description__icontains=search_query) |
+                Q(status__icontains=search_query) 
+            )
+        
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
 
         current_page_objects = objects[(page - 1) * limit:page * limit]
