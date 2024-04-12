@@ -10,5 +10,5 @@ urlpatterns = [
     path('feedbacks/', include('feedback.urls')),
     path('myproducts/', ProductByUser.as_view(), name='my-product'),
     path('myproducts/sold/', SoldProductView.as_view(), name='sold-product'),
-    path('myproducts/revenue/', TotalRevenueByUserAPIView.as_view, name='revenue'),
+    path('myproducts/revenue/', TotalRevenueByUserAPIView.as_view(), name='revenue'),
 ]
