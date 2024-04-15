@@ -1,11 +1,14 @@
 from django.contrib.auth import logout, authenticate
+from django.contrib.auth.models import update_last_login
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from user_management.models import User
-from user_management.serializers import UserSerializer, AdminUserSerializer, LoginSerializer
+from user_management.serializers import UserSerializer, AdminUserSerializer, LoginSerializer, ChangePasswordSerializer
 
 
 # Create your views here.
@@ -158,3 +161,26 @@ class ChangeStatusView(APIView):
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        user = request.user
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            old_password = serializer.validated_data['old_password']
+            new_password = serializer.validated_data['new_password']
+
+            if not user.check_password(old_password):
+                return Response({'error': 'Mật khẩu cũ không chính xác'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                validate_password(new_password, user=user)
+            except ValidationError as e:
+                return Response({'error': e.messages}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(new_password)
+            user.save()
+            update_last_login(None, user)  # Update last login to avoid user logout
+            return Response('Password changed successfully', status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

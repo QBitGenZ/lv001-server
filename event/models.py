@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 
 from user_management.models import User
+from product.models import Product
 
 
 # Create your models here.
@@ -18,3 +19,4 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+    
