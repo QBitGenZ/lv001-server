@@ -14,6 +14,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=255)
+    status = models.CharField(max_length=255, default='Đã đặt hàng')
 
     def __str__(self):
         return self.id

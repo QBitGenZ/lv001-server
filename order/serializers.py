@@ -22,7 +22,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'address', 'payment_method', 'created_at', 'items')
+        fields = ('id', 'user', 'address', 'payment_method', 'created_at', 'items', 'status')
 
         extra_kwargs = {
             'id': {'read_only': True},
