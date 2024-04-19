@@ -5,5 +5,5 @@ from event.views import EventView, EventPkView, DonantionProductView
 urlpatterns = [
     path('', EventView.as_view(), name='event'),
     path('<uuid:pk>/', EventPkView.as_view(), name='event'),
-    path('events/<uuid:event_id>/donation_products/', DonantionProductView.as_view(), name='donation-product-list'),
+    path('<uuid:event_id>/donation_products/', DonantionProductView.as_view(), name='donation-product-list'),
 ]
