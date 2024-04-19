@@ -20,3 +20,9 @@ class Event(models.Model):
     def __str__(self):
         return self.name
     
+class DonantionProduct(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, auto_created=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    
