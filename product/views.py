@@ -1,4 +1,3 @@
-from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +9,7 @@ from product.models import ProductType, Product, ProductDetail
 from product.serializers import ProductTypeSerializer, ProductSerializer, ProductImageSerializer, ProductDetailSerializer, ProductFeedbackSerializer
 from resource.models import Image
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, F, ExpressionWrapper, Sum
 
 
 # Create your views here.
@@ -89,19 +88,20 @@ class ProductView(APIView):
     def get(self, request, *args, **kwargs):
         limit = request.query_params.get('limit', 10)
         page = request.query_params.get('page', 1)
-        search_query = request.query_params.get('search', '')
+        degree_filter = request.query_params.get('degree')
+        size_filter = request.query_params.get('size')
+        product_type_filter = request.query_params.get('product_type')
         limit = int(limit)
         page = int(page)
 
         objects = Product.objects.all()
         
-        if search_query and search_query.strip() :
-            objects = objects.filter(
-                Q(name__icontains=search_query) |  # Tìm theo tên
-                Q(price__icontains=search_query) |  # Tìm theo giá
-                Q(description__icontains=search_query) |  # Tìm theo mô tả
-                Q(size__icontains=search_query)
-                )
+        if degree_filter:
+            objects = objects.filter(degree=degree_filter)
+        if size_filter:
+            objects = objects.filter(size=size_filter)
+        if product_type_filter:
+            objects = objects.filter(product_type__name=product_type_filter)
         
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
         current_page_objects = objects[(page - 1) * limit:page * limit]
@@ -244,12 +244,6 @@ class SoldProductView(APIView):
                 'total': objects.count()
             }
         }, status=status.HTTP_200_OK)
-        
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.db.models import F, ExpressionWrapper, Sum
-from user_management.models import User
-from .models import Product
 
 class TotalRevenueByUserAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -262,3 +256,34 @@ class TotalRevenueByUserAPIView(APIView):
             {'data': total_revenue},
             status=status.HTTP_200_OK
         )
+
+class SearchProductView(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def get(self, request, *args, **kwargs):
+        keyword = request.query_params.get('keyword', '')
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
+
+
+        products = Product.objects.filter(
+            Q(name__icontains=keyword) |
+            Q(description__icontains=keyword) |
+            Q(size__icontains=keyword)  
+        )
+
+        total_pages = len(products) // limit + (1 if len(products) % limit > 0 else 0)
+        current_page_products = products[(page - 1) * limit:page * limit]
+
+        serializer = ProductSerializer(current_page_products, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': products.count()
+            }
+        }, status=status.HTTP_200_OK)

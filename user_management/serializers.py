@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     addresses = AddressSerializer(many=True, read_only=True)
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'full_name', 'password', 'is_philanthropist', 'is_seller',
+        fields = ['id', 'username', 'email', 'full_name', 'password', 'is_philanthropist', 'is_seller', 'is_staff',
                   'phone', 'is_female', 'birthday', 'avatar', 'addresses', 'status', 'created_at',
                   'description']
 
