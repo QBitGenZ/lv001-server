@@ -57,7 +57,7 @@ class EventView(APIView):
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_philanthropist:
-            return Response({'error', 'Bạn không phải là nhà từ thiện'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Bạn không phải là nhà từ thiện'}, status=status.HTTP_401_UNAUTHORIZED)
         data = request.data.copy()
         data['user'] = request.user.username
         serializer = EventSerializer(data=data)
