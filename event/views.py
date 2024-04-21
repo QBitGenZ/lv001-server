@@ -83,21 +83,21 @@ class MyEventView(APIView):
         now = timezone.now()
         user = request.user
         
-        if status_filter == 'Sẽ diễn ra':
+        if status_filter == 'upcoming':
             objects = Event.objects.filter(user=user, beginAt__gt=now)
-        elif status_filter == 'Đã diễn ra':
+        elif status_filter == 'past':
             objects = Event.objects.filter(user=user, endAt__lt=now)
-        elif status_filter == 'Đang diễn ra':
+        elif status_filter == 'ongoing':
             objects = Event.objects.filter(user=user, beginAt__lte=now, endAt__gte=now)
         else:
             objects = Event.objects.filter(user=user)
 
         # Lọc sự kiện dựa trên trạng thái duyệt
-        if approval_filter == 'Đã duyệt':
+        if approval_filter == 'approved':
             objects = objects.filter(status='Đã duyệt')
-        elif approval_filter == 'Chưa duyệt':
+        elif approval_filter == 'pending':
             objects = objects.filter(status='Chưa duyệt')
-        elif approval_filter == 'Từ chối':
+        elif approval_filter == 'rejected':
             objects = objects.filter(status='Từ chối')
         
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
