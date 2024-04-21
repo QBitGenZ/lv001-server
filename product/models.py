@@ -29,6 +29,7 @@ class Product(models.Model):
     size = models.CharField(max_length=10, default='L')
     degree = models.CharField(max_length=255) # độ mới của sản phẩm
     description = models.TextField()
+    gender = models.CharField(max_length=50, default='Nam')
 
 
     def __str__(self):
