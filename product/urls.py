@@ -6,6 +6,7 @@ urlpatterns = [
     path('types/<uuid:pk>/', ProductTypeView.as_view(), name='product_types'),
     path('', ProductView.as_view(), name='products'),
     path('search/', SearchProductView.as_view(), name='search'),
+    path('myproducts/search/', SearchProductView.as_view(), name='search'),
     path('<uuid:pk>/', ProductPkView.as_view(), name='products'),
     path('images/', include('resource.urls')),
     path('feedbacks/', include('feedback.urls')),

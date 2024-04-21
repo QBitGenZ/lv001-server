@@ -287,3 +287,36 @@ class SearchProductView(APIView):
                 'total': products.count()
             }
         }, status=status.HTTP_200_OK)
+        
+class SearchProductByUserView(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def get(self, request, *args, **kwargs):
+        keyword = request.query_params.get('keyword', '')
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
+
+
+        products = Product.objects.filter(
+            Q(user=request.user) & (
+                Q(name__icontains=keyword) |
+                Q(description__icontains=keyword) |
+                Q(size__icontains=keyword)
+            )
+        )
+
+        total_pages = len(products) // limit + (1 if len(products) % limit > 0 else 0)
+        current_page_products = products[(page - 1) * limit:page * limit]
+
+        serializer = ProductSerializer(current_page_products, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': products.count()
+            }
+        }, status=status.HTTP_200_OK)
