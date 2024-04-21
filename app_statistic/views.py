@@ -54,14 +54,40 @@ class CountView(APIView):
 
         return Response({'data': {'seller': count_seller, 'buyer': count_buyer, 'philanthropist': count_philanthropist}})
     
-class InventoryStatisticsView(APIView):
+class InventoryStatisticsAdminView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     def get(self, request, *args, **kwargs):
-        products = Product.objects.filter(user=request.user).annotate(remaining=F('quantity') - F('sold')).filter(remaining__gt=0).order_by('name')
+        products = Product.objects.annotate(remaining=F('quantity') - F('sold')).filter(remaining__gt=0).order_by('name')
         
         total_inventory = Product.objects.aggregate(total_inventory=Sum('quantity'))['total_inventory']
         
         total_new_inventory = Product.objects.filter(degree__gt=0).aggregate(total_new_inventory=Sum('quantity'))['total_new_inventory']
+        
+        new_inventory_ratio = (total_new_inventory / total_inventory) * 100 if total_inventory > 0 else 0
+        
+        product_serializer = ProductSerializer(products, many=True)
+        
+        return Response({
+            'data': product_serializer.data,
+            'meta': {
+                'total_inventory': total_inventory,
+                'total_new_inventory': total_new_inventory,
+                'new_inventory_ratio': new_inventory_ratio,
+                'remaining_products_count': len(products)
+            },
+        }, status=status.HTTP_200_OK)
+        
+class InventoryStatisticsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        
+        products = Product.objects.filter(user=user).annotate(remaining=F('quantity') - F('sold')).filter(remaining__gt=0).order_by('name')
+        
+        total_inventory = products.aggregate(total_inventory=Sum('quantity'))['total_inventory']
+        
+        total_new_inventory = products.filter(degree__gt=0).aggregate(total_new_inventory=Sum('quantity'))['total_new_inventory']
         
         new_inventory_ratio = (total_new_inventory / total_inventory) * 100 if total_inventory > 0 else 0
         
