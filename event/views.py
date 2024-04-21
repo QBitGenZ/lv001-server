@@ -68,6 +68,51 @@ class EventView(APIView):
             }, status.HTTP_201_CREATED)
         else:
             return Response({'error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+        
+class MyEventView(APIView): 
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        status_filter = request.query_params.get('status', 'all')
+        approval_filter = request.query_params.get('approval', 'all')
+        limit = int(limit)
+        page = int(page)
+
+        now = timezone.now()
+        user = request.user
+        
+        if status_filter == 'upcoming':
+            objects = Event.objects.filter(user=user, beginAt__gt=now)
+        elif status_filter == 'past':
+            objects = Event.objects.filter(user=user, endAt__lt=now)
+        elif status_filter == 'ongoing':
+            objects = Event.objects.filter(user=user, beginAt__lte=now, endAt__gte=now)
+        else:
+            objects = Event.objects.filter(user=user)
+
+        # Lọc sự kiện dựa trên trạng thái duyệt
+        if approval_filter == 'approved':
+            objects = objects.filter(status='Đã duyệt')
+        elif approval_filter == 'pending':
+            objects = objects.filter(status='Chưa duyệt')
+        elif approval_filter == 'rejected':
+            objects = objects.filter(status='Từ chối')
+        
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+
+        current_page_objects = objects[(page - 1) * limit:page * limit]
+        serializer = EventSerializer(current_page_objects, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
 
 class EventPkView(APIView):
     permission_classes = [IsAuthenticated]
