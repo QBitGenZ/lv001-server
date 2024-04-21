@@ -12,6 +12,7 @@ from user_management.models import User
 from product.models import Product
 from django.db.models import Q, F, ExpressionWrapper, Sum
 from product.serializers import ProductSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 @api_view(['GET'])
@@ -54,8 +55,9 @@ class CountView(APIView):
         return Response({'data': {'seller': count_seller, 'buyer': count_buyer, 'philanthropist': count_philanthropist}})
     
 class InventoryStatisticsView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
     def get(self, request, *args, **kwargs):
-        products = Product.objects.annotate(remaining=F('quantity') - F('sold')).filter(remaining__gt=0).order_by('name')
+        products = Product.objects.filter(user=request.user).annotate(remaining=F('quantity') - F('sold')).filter(remaining__gt=0).order_by('name')
         
         total_inventory = Product.objects.aggregate(total_inventory=Sum('quantity'))['total_inventory']
         
