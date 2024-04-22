@@ -191,6 +191,17 @@ class ProductByUser(APIView):
         else:
             return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+class ProductPkView(APIView):
+    
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            product_detail = ProductDetail.objects.get(pk=pk)
+        except ProductDetail.DoesNotExist:
+            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProductDetailSerializer(product_detail)
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+    
     def put(self, request, pk, *args, **kwargs):
         try:
             product_detail = ProductDetail.objects.get(pk=pk)
@@ -212,17 +223,6 @@ class ProductByUser(APIView):
 
         product_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-class ProductPkView(APIView):
-    
-    def get(self, request, pk, *args, **kwargs):
-        try:
-            product_detail = ProductDetail.objects.get(pk=pk)
-        except ProductDetail.DoesNotExist:
-            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductDetailSerializer(product_detail)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
 class SoldProductView(APIView):
     permission_classes = [IsAuthenticated]
