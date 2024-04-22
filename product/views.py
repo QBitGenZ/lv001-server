@@ -195,20 +195,20 @@ class ProductPkView(APIView):
     
     def get(self, request, pk, *args, **kwargs):
         try:
-            product_detail = ProductDetail.objects.get(pk=pk)
-        except ProductDetail.DoesNotExist:
-            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+            product_detail = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ProductDetailSerializer(product_detail)
+        serializer = ProductSerializer(product_detail)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
     def put(self, request, pk, *args, **kwargs):
         try:
-            product_detail = ProductDetail.objects.get(pk=pk)
-        except ProductDetail.DoesNotExist:
-            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+            product_detail = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ProductDetailSerializer(instance=product_detail, data=request.data)
+        serializer = ProductSerializer(instance=product_detail, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
@@ -217,9 +217,9 @@ class ProductPkView(APIView):
 
     def delete(self, request, pk, *args, **kwargs):
         try:
-            product_detail = ProductDetail.objects.get(pk=pk)
-        except ProductDetail.DoesNotExist:
-            return Response({'error': 'Chi tiết sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+            product_detail = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
         product_detail.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
