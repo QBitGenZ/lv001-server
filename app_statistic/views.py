@@ -125,5 +125,24 @@ class ProductSalesAPIView(APIView):
             total_sold=Sum('quantity'),
             revenue=Sum(F('quantity') * F('product__price'))
         )
+        
+        sales_by_month_dict = {}
+        for sale in sales_by_month:
+            sales_by_month_dict[sale['month']] = {
+                'total_sold': sale['total_sold'] or 0,
+                'revenue': sale['revenue'] or 0
+            }
+        
+        final_sales_by_month = []
+        current_date = start_date.replace(day=1)
+        while current_date <= end_date:
+            if current_date not in sales_by_month_dict:
+                sales_by_month_dict[current_date] = {'total_sold': 0, 'revenue': 0}
+            final_sales_by_month.append({
+                'month': current_date,
+                'total_sold': sales_by_month_dict[current_date]['total_sold'],
+                'revenue': sales_by_month_dict[current_date]['revenue']
+            })
+            current_date = current_date + timedelta(days=32)
 
-        return Response({'data': sales_by_month}, status=status.HTTP_200_OK)
+        return Response({'data': final_sales_by_month}, status=status.HTTP_200_OK)
