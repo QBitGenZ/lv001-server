@@ -190,7 +190,7 @@ class DonantionProductView(APIView):
                 product_id = request.data.get('product')
                 quantity = request.data.get('quantity')
                 product = Product.objects.get(id=product_id)
-                product.sold += quantity
+                product.quantity -= quantity
                 product.save()
                 
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

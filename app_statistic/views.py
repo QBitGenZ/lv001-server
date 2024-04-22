@@ -7,10 +7,10 @@ import calendar
 
 from rest_framework.views import APIView
 
-from order.models import Order
+from order.models import Order, OrderItem
 from user_management.models import User
 from product.models import Product
-from django.db.models import Q, F, ExpressionWrapper, Sum
+from django.db.models import Q, F, ExpressionWrapper, Sum,functions
 from product.serializers import ProductSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
@@ -102,3 +102,28 @@ class InventoryStatisticsView(APIView):
                 'remaining_products_count': len(products)
             },
         }, status=status.HTTP_200_OK)
+        
+class ProductSalesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        start_date = datetime.now() - timedelta(days=365)
+        end_date = datetime.now()
+
+        if 'start_date' in request.query_params:
+            start_date = datetime.strptime(request.query_params['start_date'], '%Y-%m-%d')
+        if 'end_date' in request.query_params:
+            end_date = datetime.strptime(request.query_params['end_date'], '%Y-%m-%d')
+
+        user_products = Product.objects.filter(user=request.user)
+
+        sales_by_month = OrderItem.objects.filter(
+            product__in=user_products,
+            order__created_at__range=(start_date, end_date)
+        ).annotate(
+            month=functions.TruncMonth('order__created_at')
+        ).values('month').annotate(
+            total_sold=Sum('quantity'),
+            revenue=Sum(F('quantity') * F('product__price'))
+        )
+
+        return Response({'data': sales_by_month}, status=status.HTTP_200_OK)
