@@ -88,7 +88,7 @@ class ProductView(APIView):
     def get(self, request, *args, **kwargs):
         limit = request.query_params.get('limit', 10)
         page = request.query_params.get('page', 1)
-        degree_filter = request.query_params.get('degree')
+        degree_filter = request.query_params.get('degree', 'all')
         size_filter = request.query_params.get('size', 'all')
         product_type_filter = request.query_params.get('product_type', 'all')
         gender = request.query_params.get('gender', 'all')
