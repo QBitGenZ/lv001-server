@@ -209,7 +209,7 @@ class DonantionProductView(APIView):
                 serializer.save()
                 product = instance.product
                 quantity_change = new_quantity - old_quantity
-                product.sold += quantity_change
+                product.sold += int(quantity_change)
                 product.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
