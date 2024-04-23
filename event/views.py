@@ -39,7 +39,7 @@ class EventView(APIView):
         elif approval_filter == 'pending':
             objects = objects.filter(status='Chưa duyệt')
         elif status_filter == 'rejected':
-            objects = Event.objects.filter(status='Từ chối')
+            objects = objects.filter(status='Từ chối')
         
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
 
