@@ -257,3 +257,30 @@ class EventSearchView(APIView):
                 'total': objects.count()
             }
         }, status=status.HTTP_200_OK)
+        
+class MyEventSearchView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        limit = int(request.query_params.get('limit', 10))
+        page = int(request.query_params.get('page', 1))
+        search_query = request.query_params.get('keyword', '')
+
+        objects = Event.objects.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+        
+        objects = objects.filter(user=request.user)
+
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+        current_page_objects = objects[(page - 1) * limit:page * limit]
+
+        serializer = EventSerializer(current_page_objects, many=True)
+
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
