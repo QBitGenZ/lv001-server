@@ -89,21 +89,22 @@ class ProductView(APIView):
         limit = request.query_params.get('limit', 10)
         page = request.query_params.get('page', 1)
         degree_filter = request.query_params.get('degree')
-        size_filter = request.query_params.get('size')
-        product_type_filter = request.query_params.get('product_type')
-        gender = request.query_params.get('gender')
+        size_filter = request.query_params.get('size', 'all')
+        product_type_filter = request.query_params.get('product_type', 'all')
+        gender = request.query_params.get('gender', 'all')
         limit = int(limit)
         page = int(page)
 
         objects = Product.objects.all()
         
-        if degree_filter:
+        if degree_filter != 'all':
             objects = objects.filter(degree=degree_filter)
-        if size_filter:
+            
+        if size_filter != 'all':
             objects = objects.filter(size=size_filter)
-        if product_type_filter:
+        if product_type_filter != 'all':
             objects = objects.filter(product_type__name=product_type_filter)
-        if gender:
+        if gender != 'all':
             objects = objects.filter(gender=gender)
         
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
