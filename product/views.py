@@ -209,7 +209,7 @@ class ProductPkView(APIView):
         except Product.DoesNotExist:
             return Response({'error': 'Sản phẩm không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ProductSerializer(instance=product_detail, data=request.data)
+        serializer = ProductSerializer(instance=product_detail, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
