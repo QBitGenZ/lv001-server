@@ -128,10 +128,13 @@ class ProductSalesAPIView(APIView):
         
         sales_by_month_dict = {}
         for sale in sales_by_month:
+            sale['month'] = sale['month'].replate(date=1)
             sales_by_month_dict[sale['month']] = {
                 'total_sold': sale['total_sold'] or 0,
                 'revenue': sale['revenue'] or 0
             }
+            
+        print(sales_by_month)
         
         final_sales_by_month = []
         current_date = start_date.replace(day=1)
@@ -144,5 +147,8 @@ class ProductSalesAPIView(APIView):
                 'revenue': sales_by_month_dict[current_date]['revenue']
             })
             current_date = current_date + timedelta(days=32)
+            current_date = current_date.replace(day=1)
+            
+        print(final_sales_by_month)
 
         return Response({'data': final_sales_by_month}, status=status.HTTP_200_OK)
