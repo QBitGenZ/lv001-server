@@ -38,7 +38,7 @@ def monthly_profit_chart(request):
             created_at__year=from_date.year,
             created_at__month=from_date.month
         ).aggregate(total_profit=Sum('items__product__price'))['total_profit'] or 0
-        revenue = total_profit * 0.006  
+        revenue = total_profit * 0.1  
         monthly_profit[from_date.strftime('%Y-%m')] = revenue
         from_date = from_date + timedelta(days=calendar.monthrange(from_date.year, from_date.month)[1])
 
@@ -46,6 +46,30 @@ def monthly_profit_chart(request):
         {'data': monthly_profit},
         status=status.HTTP_200_OK
     )
+    
+class TotalFund(APIView):
+    def get(self, request):
+        total_contribution = OrderItem.objects.aggregate(total_contribution=Sum('product__price'))['total_contribution'] or 0
+        
+        fund = total_contribution * 0.05
+        
+        return Response(
+            {'data': fund},
+            status=status.HTTP_200_OK
+        )
+        
+class TotalFundByUser(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        total_contribution = OrderItem.objects.filter(order__user=request.user).aggregate(total_contribution=Sum('product__price'))['total_contribution'] or 0
+        
+        total_contribution = total_contribution * 0.05
+        
+        return Response(
+            {'data': total_contribution},
+            status=status.HTTP_200_OK
+        )
 
 class CountView(APIView):
     def get(self, request):
