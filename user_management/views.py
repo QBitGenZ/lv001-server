@@ -15,9 +15,27 @@ from user_management.serializers import UserSerializer, AdminUserSerializer, Log
 class AdminUserView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(is_staff=True)
-        serializer = AdminUserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        limit = request.query_params.get('limit', 10)
+        page = request.query_params.get('page', 1)
+        limit = int(limit)
+        page = int(page)
+
+        objects = User.objects.filter(is_staff=True)
+        
+        
+        total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+        current_page_objects = objects[(page - 1) * limit:page * limit]
+
+        serializer = AdminUserSerializer(current_page_objects, many=True)
+        return Response({
+            'data': serializer.data,
+            'meta': {
+                'total_pages': total_pages,
+                'current_page': page,
+                'limit': limit,
+                'total': objects.count()
+            }
+        }, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         if request.user.is_superuser:
@@ -77,13 +95,33 @@ class UserView(APIView):
             serializer = UserSerializer(user, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            users = User.objects.all()
+            limit = request.query_params.get('limit', 10)
+            page = request.query_params.get('page', 1)
+            limit = int(limit)
+            page = int(page)
+
+            objects = User.objects.filter()
+            
+            
             if is_seller:
-                users = users.filter(is_seller=True)
+                objects = objects.filter(is_seller=True)
             if is_philanthropist:
-                users = users.filter(is_philanthropist=True)
-            serializer = UserSerializer(users, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+                objects = objects.filter(is_philanthropist=True)
+            
+            total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
+            current_page_objects = objects[(page - 1) * limit:page * limit]
+
+            serializer = AdminUserSerializer(current_page_objects, many=True)
+            return Response({
+                'data': serializer.data,
+                'meta': {
+                    'total_pages': total_pages,
+                    'current_page': page,
+                    'limit': limit,
+                    'total': objects.count()
+                }
+            }, status=status.HTTP_200_OK)
+        
     def put(self, request, *args, **kwargs):
         serializers = UserSerializer(request.user, data=request.data, partial=True)
         if serializers.is_valid():

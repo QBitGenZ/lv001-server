@@ -152,3 +152,10 @@ class ProductSalesAPIView(APIView):
         print(final_sales_by_month)
 
         return Response({'data': final_sales_by_month}, status=status.HTTP_200_OK)
+    
+class CountUserByStatus(APIView):
+    def get(self, request):
+        query = request.query_params.get('status', None)
+        objects = User.objects.filter(status=query)
+        return Response({'data':objects.count()}, status=status.HTTP_200_OK)
+            
