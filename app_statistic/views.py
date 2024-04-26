@@ -8,6 +8,7 @@ import calendar
 from rest_framework.views import APIView
 
 from order.models import Order, OrderItem
+from event.models import Event
 from user_management.models import User
 from product.models import Product
 from django.db.models import Q, F, ExpressionWrapper, Sum,functions
@@ -157,6 +158,7 @@ class CountUserByStatus(APIView):
     def get(self, request):
         query = request.query_params.get('status', None)
         objects = User.objects.filter(status=query)
+        objects = objects.filter(is_philanthropist=True)
         return Response({'data':objects.count()}, status=status.HTTP_200_OK)
     
 class CountProductByStatus(APIView):
@@ -164,4 +166,11 @@ class CountProductByStatus(APIView):
         query = request.query_params.get('status', None)
         objects = Product.objects.filter(status=query)
         return Response({'data':objects.count()}, status=status.HTTP_200_OK)
+    
+class CountEventByStatus(APIView):
+    def get(self, request):
+        query = request.query_params.get('status', None)
+        objects = Event.objects.filter(status=query)
+        return Response({'data':objects.count()}, status=status.HTTP_200_OK)
+
             
