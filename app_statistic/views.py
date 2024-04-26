@@ -158,4 +158,10 @@ class CountUserByStatus(APIView):
         query = request.query_params.get('status', None)
         objects = User.objects.filter(status=query)
         return Response({'data':objects.count()}, status=status.HTTP_200_OK)
+    
+class CountProductByStatus(APIView):
+    def get(self, request):
+        query = request.query_params.get('status', None)
+        objects = Product.objects.filter(status=query)
+        return Response({'data':objects.count()}, status=status.HTTP_200_OK)
             

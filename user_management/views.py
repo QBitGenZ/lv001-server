@@ -26,7 +26,7 @@ class AdminUserView(APIView):
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
         current_page_objects = objects[(page - 1) * limit:page * limit]
 
-        serializer = AdminUserSerializer(current_page_objects, many=True)
+        serializer = UserSerializer(current_page_objects, many=True)
         return Response({
             'data': serializer.data,
             'meta': {
