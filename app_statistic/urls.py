@@ -8,5 +8,5 @@ urlpatterns = [
     path('inventory/', InventoryStatisticsView.as_view(), name='inventory'),
     path('inventory/admin/', InventoryStatisticsAdminView.as_view(), name='inventory'),
     path('my-revenue/', ProductSalesAPIView.as_view(), name='revenue'),
-    path('count-user-by-status', CountUserByStatus.as_view(), name='user-by-status')
+    path('count-user-by-status/', CountUserByStatus.as_view(), name='user-by-status')
 ]
