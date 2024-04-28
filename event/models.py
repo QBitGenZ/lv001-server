@@ -26,3 +26,5 @@ class DonantionProduct(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     
+    class Meta:
+        unique_together = ('product', 'event')

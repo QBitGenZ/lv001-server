@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from order.models import Order, OrderItem
+from cart.models import CartItem
+from product.models import Product
 from order.serializers import OrderSerializer, AddOrderDetailSerializer
 
 class OrderListView(APIView):
@@ -123,6 +125,24 @@ class OrderDetailView(APIView):
         data['order'] = order.id
         serializer = AddOrderDetailSerializer(data=data)
         if serializer.is_valid():
+            product_id = data.get('product')
+            quantity = int(data.get('quantity'))
+            
+            product = Product.objects.get(pk=product_id)
+            if(product.sold >= product.quantity):
+                return Response({'error': 'Sản phẩm đã bán hết'})
+            if(product.sold + quantity > product.quantity):
+                return Response({'error': 'Sản phẩm không còn đủ số lượng yêu cầu'})
+            product.sold += quantity  
+            product.save()  
+            
+            cart_item = CartItem.objects.get(product=product)
+            cart_item.quantity -= quantity
+            if(cart_item.quantity <= 0):
+                cart_item.delete()
+            else:
+                cart_item.save()
+            
             serializer.save()
             return Response(
                 {'data': serializer.data},
