@@ -130,7 +130,6 @@ class InventoryStatisticsView(APIView):
         
 class ProductSalesAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get(self, request):
         start_date = datetime.now() - timedelta(days=365)
         end_date = datetime.now()
@@ -151,17 +150,16 @@ class ProductSalesAPIView(APIView):
             total_sold=Sum('quantity'),
             revenue=Sum(F('quantity') * F('product__price'))
         )
-
+        
         sales_by_month_dict = {}
         for sale in sales_by_month:
-            # Đảm bảo rằng tháng chỉ chứa ngày đầu tiên của tháng
-            sale['month'] = sale['month'].replace(day=1)
             sales_by_month_dict[sale['month']] = {
                 'total_sold': sale['total_sold'] or 0,
                 'revenue': sale['revenue'] or 0
             }
+        
 
-        return Response({'data': sales_by_month_dict}, status=status.HTTP_200_OK)
+        return Response({'data': sales_by_month}, status=status.HTTP_200_OK)
     
 class CountUserByStatus(APIView):
     def get(self, request):
