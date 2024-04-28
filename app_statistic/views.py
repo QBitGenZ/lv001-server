@@ -158,25 +158,8 @@ class ProductSalesAPIView(APIView):
                 'total_sold': sale['total_sold'] or 0,
                 'revenue': sale['revenue'] or 0
             }
-            
-        print(sales_by_month)
-        
-        final_sales_by_month = []
-        current_date = start_date.replace(day=1)
-        while current_date <= end_date:
-            if current_date not in sales_by_month_dict:
-                sales_by_month_dict[current_date] = {'total_sold': 0, 'revenue': 0}
-            final_sales_by_month.append({
-                'month': current_date,
-                'total_sold': sales_by_month_dict[current_date]['total_sold'],
-                'revenue': sales_by_month_dict[current_date]['revenue']
-            })
-            current_date = current_date + timedelta(days=32)
-            current_date = current_date.replace(day=1)
-            
-        print(final_sales_by_month)
 
-        return Response({'data': final_sales_by_month}, status=status.HTTP_200_OK)
+        return Response({'data': sales_by_month_dict}, status=status.HTTP_200_OK)
     
 class CountUserByStatus(APIView):
     def get(self, request):
