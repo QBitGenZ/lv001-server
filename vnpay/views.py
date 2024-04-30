@@ -48,7 +48,7 @@ class PaymentReponse(APIView):
 
             message = response_messages.get(
                 vnp_response_code, "Mã lỗi không hợp lệ.")
-
+            print(vnp_response_code)
             if vnp_response_code == '00' or vnp_response_code == '07':
               try:
                 order = Order.objects.get(id=order_id)
