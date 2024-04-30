@@ -15,6 +15,7 @@ class Order(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=255)
     status = models.CharField(max_length=255, default='Đã đặt hàng')
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return self.id

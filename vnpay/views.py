@@ -55,7 +55,7 @@ class PaymentReponse(APIView):
               except Order.DoesNotExist:
                 return Response(status=404)
               
-              order.status = 'Đã thanh toán'
+              order.is_paid = True
               order.save()
               print('Đã làm hết xong')
             
