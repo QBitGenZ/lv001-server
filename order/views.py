@@ -68,7 +68,8 @@ class OrderListPkView(APIView):
         except Order.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         data = request.data.copy()
-        data['user'] = request.user.username
+        if not request.user.is_staff:
+            data['user'] = request.user.username
         serializer = OrderSerializer(instance=order, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
