@@ -3,13 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from vnpay.vnpay import VnpayPayment
-from datetime import datetime
+from order.models import Order
 
 # Create your views here.
 class CreatePayment(APIView):
   def post(self, request, *args, **kwargs):
       order_type = 'other'
-      order_id = datetime.now()
+      order_id = request.data['order']
       amount = int(request.data['amount'])
       order_desc = 'Nap tien'
       language = 'vn'
@@ -48,6 +48,16 @@ class PaymentReponse(APIView):
 
             message = response_messages.get(
                 vnp_response_code, "Mã lỗi không hợp lệ.")
+
+            if vnp_response_code == '00' or vnp_response_code == '07':
+              try:
+                order = Order.objects.get(id=order_id)
+              except Order.DoesNotExist:
+                return Response(status=404)
+              
+              order.status = 'Đã thanh toán'
+              order.save()
+              print('Đã làm hết xong')
             
             print(message)
 
