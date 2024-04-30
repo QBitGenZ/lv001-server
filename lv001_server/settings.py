@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'notification.apps.NotificationConfig',
     'app_statistic.apps.AppStatisticConfig',
     'report.apps.ReportConfig',
+    'vnpay.apps.VnpayConfig',
 ]
 
 MIDDLEWARE = [
@@ -171,3 +172,12 @@ REST_FRAMEWORK = {
 CORS_ALLOW_ALL_ORIGINS = True
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+VNP_VERSION = "2.1.0"
+VNP_COMMAND = "pay"
+VNP_CURR_CODE = "VND"
+VNPAY_RETURN_URL = 'http://127.0.0.1:8000/v1/vnpay/payment_response/'  # get from config
+VNPAY_PAYMENT_URL = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get from config
+VNPAY_API_URL = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
+VNPAY_TMN_CODE = 'LWKHD24I'  # Website ID in VNPAY System, get from config
+VNPAY_HASH_SECRET_KEY = 'IMVSWUVUAJLADFUFZDRJVDJABBPUHSMD'  # Secret key for create checksum,get from config
