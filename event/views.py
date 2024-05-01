@@ -194,7 +194,7 @@ class DonantionProductView(APIView):
                     return Response({'error': 'Sản phẩm đã bán hết'})
                 if(product.sold + int(quantity) > product.quantity):
                     return Response({'error': 'Sản phẩm không còn đủ số lượng yêu cầu'})
-                product.sold += int(quantity)
+                product.quantity -= int(quantity)
                 product.save()
                 
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

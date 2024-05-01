@@ -14,10 +14,18 @@ class OrderListView(APIView):
     def get(self, request, *args, **kwargs):
         limit = request.query_params.get('limit', 10)
         page = request.query_params.get('page', 1)
+        status = request.query_params.get('status', 'all')
+        is_paid = request.query_params.get('is_paid', 'all')
         limit = int(limit)
         page = int(page)
 
         objects = Order.objects.all()
+        
+        if(status != 'all'):
+            objects = objects.filter(status=status)
+        if(is_paid != 'all'):
+            objects = objects.filter(is_paid=is_paid)
+        
         total_pages = len(objects) // limit + (1 if len(objects) % limit > 0 else 0)
 
         current_page_objects = objects[(page - 1) * limit:page * limit]
