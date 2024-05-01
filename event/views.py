@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from event.models import Event, DonantionProduct
-from event.serializers import EventSerializer, DonantionProductSerializer
+from event.serializers import EventSerializer, DonantionProductSerializer, CreateDonantionProductSerializer
 from django.db.models import Q
 from product.models import Product
 
@@ -182,7 +182,7 @@ class DonantionProductView(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            serializer = DonantionProductSerializer(data=request.data)
+            serializer = CreateDonantionProductSerializer(data=request.data)
             
             if serializer.is_valid():
                 serializer.save()
@@ -206,7 +206,7 @@ class DonantionProductView(APIView):
     def put(self, request, pk, *args, **kwargs):
         try:
             instance = DonantionProduct.objects.get(pk=pk)
-            serializer = DonantionProductSerializer(instance=instance, data=request.data, partial=True)
+            serializer = CreateDonantionProductSerializer(instance=instance, data=request.data, partial=True)
             if serializer.is_valid():
                 old_quantity = instance.quantity
                 new_quantity = request.data.get('quantity')

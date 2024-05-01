@@ -22,3 +22,12 @@ class DonantionProductSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'id': {'read_only': True},
         }
+        
+class CreateDonantionProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonantionProduct
+        fields = '__all__'
+
+        extra_kwargs = {
+            'id': {'read_only': True},
+        }
