@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from event.models import Event, DonantionProduct
-
+from product.serializers import ProductDetailSerializer
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +14,7 @@ class EventSerializer(serializers.ModelSerializer):
         }
 
 class DonantionProductSerializer(serializers.ModelSerializer):
+    product = ProductDetailSerializer()
     class Meta:
         model = DonantionProduct
         fields = '__all__'
